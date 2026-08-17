@@ -2,6 +2,8 @@ const express = require("express");
 const { connectToDatabase } = require("./connect");
 const ejs = require("ejs");
 const path = require("path");
+const cookieParser = require('cookie-parser');
+const {restrictToLoggedInUserOnly, checkAuth} = require('./middlewares/authMiddleware')
 const urlRoutes = require("./routes/url");
 const staticRouter = require("./routes/staticRouter");
 const userRoutes = require("./routes/user");
@@ -22,10 +24,11 @@ app.set("views", path.resolve("./views"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-app.use("/url", urlRoutes);
+app.use("/url", restrictToLoggedInUserOnly, urlRoutes);
 
-app.use("/", staticRouter);
+app.use("/", checkAuth, staticRouter);
 
 app.use('/', userRoutes);
 
