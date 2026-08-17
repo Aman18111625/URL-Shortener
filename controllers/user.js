@@ -1,7 +1,5 @@
 const User = require('../models/user')
 
-console.log('User-->', User);
-
 async function handleUserSignUp(req, res) {
    const {name, email, password} = req.body;
    await User.create({
@@ -9,9 +7,21 @@ async function handleUserSignUp(req, res) {
      email,
      password
    })
-   return res.send('homes')
+   return res.redirect('/')
+}
+
+async function handleLogin(req, res){
+    const {email, password} = req.body;
+    const user = await User.findOne({email, password})
+    if(!user) {
+        return res.render('login', {
+            error: "Invalid Credentials"
+        });
+    }
+    return res.redirect('/');
 }
 
 module.exports = {
-    handleUserSignUp
+    handleUserSignUp,
+    handleLogin
 }

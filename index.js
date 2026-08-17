@@ -27,7 +27,7 @@ app.use("/url", urlRoutes);
 
 app.use("/", staticRouter);
 
-app.use('/user', userRoutes);
+app.use('/', userRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
