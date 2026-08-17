@@ -1,0 +1,34 @@
+{
+  "name": "url-shortener",
+  "version": "1.0.0",
+  "description": "Design a URL Shortener service which take a valid URL and returned a shortened URL and redirected to the user to previously provided URL along with tracking of visits/click on the URL",
+  "keywords": [
+    "url",
+    "shortener",
+    "visits",
+    "node.js",
+    "express.js"
+  ],
+  "homepage": "https://github.com/Aman18111625/URL-Shortener#readme",
+  "bugs": {
+    "url": "https://github.com/Aman18111625/URL-Shortener/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aman18111625/URL-Shortener.git"
+  },
+  "license": "ISC",
+  "author": "Aman Gupta",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.9.2",
+    "nanoid": "^6.0.1",
+    "nodemon": "^3.1.14"
+  }
+}
