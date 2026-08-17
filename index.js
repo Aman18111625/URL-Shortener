@@ -1,9 +1,10 @@
 const express = require("express");
-const urlRoutes = require("./routes/url");
 const { connectToDatabase } = require("./connect");
 const ejs = require("ejs");
 const path = require("path");
+const urlRoutes = require("./routes/url");
 const staticRouter = require("./routes/staticRouter");
+const userRoutes = require("./routes/user");
 
 const app = express();
 const PORT = 3000;
@@ -25,6 +26,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/url", urlRoutes);
 
 app.use("/", staticRouter);
+
+app.use('/user', userRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
