@@ -3,7 +3,7 @@ const { connectToDatabase } = require("./connect");
 const ejs = require("ejs");
 const path = require("path");
 const cookieParser = require('cookie-parser');
-const {restrictToLoggedInUserOnly, checkAuth} = require('./middlewares/authMiddleware')
+const {restrictToLoggedInUserOnly, restrictTo} = require('./middlewares/authMiddleware')
 const urlRoutes = require("./routes/url");
 const staticRouter = require("./routes/staticRouter");
 const userRoutes = require("./routes/user");
@@ -26,11 +26,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/url", restrictToLoggedInUserOnly, urlRoutes);
-
-app.use("/", checkAuth, staticRouter);
-
+// Public routes (no auth required)
 app.use('/', userRoutes);
+
+// Protected routes - auth required + role check
+// Only NORMAL and ADMIN users can create/manage URLs
+app.use("/url", restrictToLoggedInUserOnly, restrictTo(["NORMAL", "ADMIN"]), urlRoutes);
+
+// Only NORMAL and ADMIN users can view homepage
+app.use("/", restrictToLoggedInUserOnly, restrictTo(["NORMAL", "ADMIN"]), staticRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
