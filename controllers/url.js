@@ -4,7 +4,8 @@ const URL = require("../models/url");
 async function handleGenerateShortURL(req, res) {
   const body = req.body;
 
-  if(!body.url) return res.status(400).json({error: "Request body is missing"});
+  if (!body.url)
+    return res.status(400).json({ error: "Request body is missing" });
 
   const shortId = nanoid.nanoid(8);
 
@@ -12,45 +13,41 @@ async function handleGenerateShortURL(req, res) {
     shortId: shortId,
     redirectUrl: body.url,
     visitHistory: [],
-    createdBy: req.user._id
-  })
+    createdBy: req.user._id,
+  });
 
-  return res.status(200).json({shortId: shortId});
-};
+  return res.status(200).json({ shortId: shortId });
+}
 
 async function handleRedirectToOriginalURL(req, res) {
+  const shortId = req.params.id;
 
-    const shortId = req.params.id;
+  const url = await URL.findOne({ shortId: shortId });
 
-    const url = await URL.findOne({shortId: shortId});
+  if (!url) return res.status(404).json({ error: "Short URL not found" });
 
-    if(!url) return res.status(404).json({error: "Short URL not found"});
+  url.visitHistory.push({ timestamp: Date.now() });
+  await url.save();
 
-    url.visitHistory.push({timestamp: Date.now()});
-    await url.save();
-
-    return res.redirect(url.redirectUrl);
-
+  return res.redirect(url.redirectUrl);
 }
 
 async function handleGetAnalytics(req, res) {
+  const shortId = req.params.id;
 
-    const shortId = req.params.id;
+  const url = await URL.findOne({ shortId: shortId });
 
-    const url = await URL.findOne({shortId: shortId});
+  if (!url) return res.status(404).json({ error: "Short URL not found" });
 
-    if(!url) return res.status(404).json({error: "Short URL not found"});
-
-    return res.status(200).json({
-        shortId: url.shortId,
-        redirectUrl: url.redirectUrl,
-        visitHistory: url.visitHistory,
-    });
-
+  return res.status(200).json({
+    shortId: url.shortId,
+    redirectUrl: url.redirectUrl,
+    visitHistory: url.visitHistory,
+  });
 }
 
 module.exports = {
   handleGenerateShortURL,
   handleRedirectToOriginalURL,
-  handleGetAnalytics
+  handleGetAnalytics,
 };
