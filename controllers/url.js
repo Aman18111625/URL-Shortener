@@ -1,4 +1,3 @@
-const nanoid = require("nanoid");
 const URL = require("../models/url");
 
 async function handleGenerateShortURL(req, res) {
@@ -7,7 +6,8 @@ async function handleGenerateShortURL(req, res) {
   if (!body.url)
     return res.status(400).json({ error: "Request body is missing" });
 
-  const shortId = nanoid.nanoid(8);
+  const { nanoid } = await import("nanoid");
+  const shortId = nanoid(8);
 
   await URL.create({
     shortId: shortId,
