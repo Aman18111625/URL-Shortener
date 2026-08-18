@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const { connectToDatabase } = require("./connect");
 const ejs = require("ejs");
@@ -10,16 +12,6 @@ const userRoutes = require("./routes/user");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-if (process.env.MONGODB_URI) {
-  connectToDatabase(process.env.MONGODB_URI)
-    .then(() => {
-      console.log("Database connection established");
-    })
-    .catch((error) => {
-      console.error("Error connecting to the database:", error);
-    });
-}
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
@@ -35,10 +27,24 @@ app.use("/", userRoutes);
 app.use("/url", restrictToLoggedInUserOnly, restrictTo(["NORMAL", "ADMIN"]), urlRoutes);
 app.use("/", restrictToLoggedInUserOnly, restrictTo(["NORMAL", "ADMIN"]), staticRouter);
 
-if (process.env.NODE_ENV !== "production") {
+async function startServer() {
+  if (process.env.MONGODB_URI) {
+    await connectToDatabase(process.env.MONGODB_URI);
+    console.log("Database connection established");
+  } else {
+    console.warn("MONGODB_URI is not defined. Starting without database connection.");
+  }
+
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
 }
 
-module.exports = app;
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error("Error starting the server:", error);
+    process.exit(1);
+  });
+}
+
+module.exports = { app, startServer };
